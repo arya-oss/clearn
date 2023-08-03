@@ -29,3 +29,7 @@ void Database::exec(const std::string& sql) {
         sqlite3_free(zErrMsg);
     }
 }
+
+sqlite3* Database::getHandle() const {
+    return db;
+}

@@ -13,6 +13,7 @@ public:
     bool open(const std::string& filename);
     void exec(const std::string& sql);
     void close();
+    sqlite3* getHandle() const;
 };
 
 #endif  // __LIB_DB_DATABASE_HPP
