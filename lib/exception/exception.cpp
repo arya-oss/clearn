@@ -19,3 +19,13 @@ UserAlreadyExistsException::~UserAlreadyExistsException() {
 const char* UserAlreadyExistsException::what() const noexcept {
     return "User already exists";
 }
+
+DBException::DBException(const std::string& message) : message(message) {
+}
+
+DBException::~DBException() {
+}
+
+const char* DBException::what() const noexcept {
+    return message.c_str();
+}

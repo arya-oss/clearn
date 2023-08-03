@@ -6,6 +6,6 @@
 #include <sstream>
 #include <openssl/evp.h>
 
-std::string sha256(const std::string str);
+std::string sha256(char * str);
 
 #endif // __LIB_UTILS_HASH_HPP

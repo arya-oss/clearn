@@ -9,17 +9,8 @@ class TraineeView : public View {
 public:
     TraineeView(User* user) : View(user) {}
     ~TraineeView() {}
-    void show() {
-        std::cout << "Choose an option:" << std::endl;
-        std::cout << "1. Register Course" << std::endl;
-        std::cout << "2. View Course Materials" << std::endl;
-        std::cout << "3. Take Test" << std::endl;
-        std::cout << "4. View Profile" << std::endl;
-        std::cout << "5. Ask Queries" << std::endl;
-        std::cout << "6. Highest Scores" << std::endl;
-        std::cout << "7. Test Details" << std::endl;
-        std::cout << "8. Exit" << std::endl;
-    }
+    void show();
+    void run();
 };
 
 

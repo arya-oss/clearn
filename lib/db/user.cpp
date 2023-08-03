@@ -1,4 +1,5 @@
 #include "user.hpp"
+#include "../exception/exception.hpp"
 
 /**
  * @brief Construct a new User:: User object
@@ -70,17 +71,15 @@ UserDao::~UserDao() {
 bool UserDao::insert(const User& user) {
     std::string sql = "INSERT INTO user (email, password, name, user_type) VALUES (?, ?, ?, ?)";
     sqlite3_stmt* stmt;
-    if (sqlite3_prepare_v2(db.getHandle(), sql.c_str(), sql.size(), &stmt, NULL) != SQLITE_OK) {
-        std::cerr << "SQL error: " << sqlite3_errmsg(db.getHandle()) << std::endl;
-        return false;
+    if (sqlite3_prepare_v2(db.getHandle(), sql.c_str(), sql.size(), &stmt, nullptr) != SQLITE_OK) {
+        throw DBException("SQL error: " + std::string(sqlite3_errmsg(db.getHandle())));
     }
-    sqlite3_bind_text(stmt, 1, user.getEmail().c_str(), user.getEmail().size(), SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 2, user.getPassword().c_str(), user.getPassword().size(), SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 3, user.getName().c_str(), user.getName().size(), SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 4, user.getUserType().c_str(), user.getUserType().size(), SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, user.getEmail().c_str(), user.getEmail().size(), SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, user.getPassword().c_str(), user.getPassword().size(), SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, user.getName().c_str(), user.getName().size(), SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 4, user.getUserType().c_str(), user.getUserType().size(), SQLITE_TRANSIENT);
     if (sqlite3_step(stmt) != SQLITE_DONE) {
-        std::cerr << "SQL error: " << sqlite3_errmsg(db.getHandle()) << std::endl;
-        return false;
+        throw UserAlreadyExistsException(user.getEmail());
     }
     sqlite3_finalize(stmt);
     return true;
@@ -93,16 +92,14 @@ bool UserDao::update(const User& user) {
     std::string sql = "UPDATE user SET password = ?, name = ?, user_type = ? WHERE email = ?";
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db.getHandle(), sql.c_str(), sql.size(), &stmt, NULL) != SQLITE_OK) {
-        std::cerr << "SQL error: " << sqlite3_errmsg(db.getHandle()) << std::endl;
-        return false;
+        throw DBException("SQL error: " + std::string(sqlite3_errmsg(db.getHandle())));
     }
-    sqlite3_bind_text(stmt, 1, user.getPassword().c_str(), user.getPassword().size(), SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 2, user.getName().c_str(), user.getName().size(), SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 3, user.getEmail().c_str(), user.getEmail().size(), SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 4, user.getUserType().c_str(), user.getUserType().size(), SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, user.getPassword().c_str(), user.getPassword().size(), SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, user.getName().c_str(), user.getName().size(), SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, user.getEmail().c_str(), user.getEmail().size(), SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 4, user.getUserType().c_str(), user.getUserType().size(), SQLITE_TRANSIENT);
     if (sqlite3_step(stmt) != SQLITE_DONE) {
-        std::cerr << "SQL error: " << sqlite3_errmsg(db.getHandle()) << std::endl;
-        return false;
+        throw UserNotFoundException(user.getEmail());
     }
     sqlite3_finalize(stmt);
     return true;
@@ -115,13 +112,11 @@ bool UserDao::remove(const User& user) {
     std::string sql = "DELETE FROM user WHERE email = ?";
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db.getHandle(), sql.c_str(), sql.size(), &stmt, NULL) != SQLITE_OK) {
-        std::cerr << "SQL error: " << sqlite3_errmsg(db.getHandle()) << std::endl;
-        return false;
+        throw DBException("SQL error: " + std::string(sqlite3_errmsg(db.getHandle())));
     }
-    sqlite3_bind_text(stmt, 1, user.getEmail().c_str(), user.getEmail().size(), SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, user.getEmail().c_str(), user.getEmail().size(), SQLITE_TRANSIENT);
     if (sqlite3_step(stmt) != SQLITE_DONE) {
-        std::cerr << "SQL error: " << sqlite3_errmsg(db.getHandle()) << std::endl;
-        return false;
+        throw UserNotFoundException(user.getEmail());
     }
     sqlite3_finalize(stmt);
     return true;
@@ -134,13 +129,11 @@ User UserDao::findByEmail(const std::string& email) {
     std::string sql = "SELECT email, password, name, user_type FROM user WHERE email = ?";
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db.getHandle(), sql.c_str(), sql.size(), &stmt, NULL) != SQLITE_OK) {
-        std::cerr << "SQL error: " << sqlite3_errmsg(db.getHandle()) << std::endl;
-        return User();
+        throw DBException("SQL error: " + std::string(sqlite3_errmsg(db.getHandle())));
     }
-    sqlite3_bind_text(stmt, 1, email.c_str(), email.size(), SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, email.c_str(), email.size(), SQLITE_TRANSIENT);
     if (sqlite3_step(stmt) != SQLITE_ROW) {
-        std::cerr << "SQL error: " << sqlite3_errmsg(db.getHandle()) << std::endl;
-        return User();
+        throw UserNotFoundException(email);
     }
     std::string _email = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
     std::string password = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
@@ -157,8 +150,7 @@ std::vector<User> UserDao::findAll() {
     std::string sql = "SELECT email, password, name, user_type FROM user";
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db.getHandle(), sql.c_str(), sql.size(), &stmt, NULL) != SQLITE_OK) {
-        std::cerr << "SQL error: " << sqlite3_errmsg(db.getHandle()) << std::endl;
-        return std::vector<User>();
+        throw DBException("SQL error: " + std::string(sqlite3_errmsg(db.getHandle())));
     }
     std::vector<User> users;
     while (sqlite3_step(stmt) == SQLITE_ROW) {
@@ -179,13 +171,11 @@ bool UserDao::verify(const std::string& email, const std::string& hashPassword) 
     std::string sql = "SELECT email, password FROM user WHERE email = ?";
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db.getHandle(), sql.c_str(), sql.size(), &stmt, NULL) != SQLITE_OK) {
-        std::cerr << "SQL error: " << sqlite3_errmsg(db.getHandle()) << std::endl;
-        return false;
+        throw DBException("SQL error: " + std::string(sqlite3_errmsg(db.getHandle())));
     }
-    sqlite3_bind_text(stmt, 1, email.c_str(), email.size(), SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, email.c_str(), email.size(), SQLITE_TRANSIENT);
     if (sqlite3_step(stmt) != SQLITE_ROW) {
-        std::cerr << "SQL error: " << sqlite3_errmsg(db.getHandle()) << std::endl;
-        return false;
+        throw UserNotFoundException(email);
     }
     std::string password = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
     sqlite3_finalize(stmt);

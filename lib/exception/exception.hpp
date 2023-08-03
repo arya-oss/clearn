@@ -23,4 +23,13 @@ class UserAlreadyExistsException : public std::exception {
         std::string email;
 };
 
+class DBException : public std::exception {
+    public:
+        DBException(const std::string& message);
+        ~DBException();
+        const char* what() const noexcept override;
+    private:
+        std::string message;
+};
+
 #endif  // __LIB_EXCEPTION_EXCEPTION_HPP
