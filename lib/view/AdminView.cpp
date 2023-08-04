@@ -1,4 +1,5 @@
 #include "AdminView.hpp"
+#include <vector>
 
 void AdminView::show() {
     std::cout << "Choose an option:" << std::endl;
@@ -18,16 +19,16 @@ void AdminView::run() {
         std::cin >> option;
         switch(option) {
         case 1:
-            std::cout << "Add user" << std::endl;
+            this->addUser();
             break;
         case 2:
-            std::cout << "Delete user" << std::endl;
+            this->removeUser();
             break;
         case 3:
-            std::cout << "Update user" << std::endl;
+            this->updateUser();
             break;
         case 4:
-            std::cout << "Display all users" << std::endl;
+            this->listUsers();
             break;
         case 5:
             exited = true;
@@ -36,5 +37,53 @@ void AdminView::run() {
             std::cout << "Invalid option" << std::endl;
             break;
         }
+    }
+}
+
+void AdminView::addUser() {
+    User user;
+    std::cin >> user;
+    try {
+        this->userDao->insert(user);
+    } catch (UserAlreadyExistsException& e) {
+        std::cerr << e.what() << std::endl;
+    } catch (DBException& e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+void AdminView::removeUser() {
+    std::string email;
+    std::cout << "Enter email: " << std::endl;
+    std::cin >> email;
+    try {
+        this->userDao->remove(email);
+    } catch (UserNotFoundException& e) {
+        std::cerr << e.what() << std::endl;
+    } catch (DBException& e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+void AdminView::listUsers() {
+    try {
+        std::vector<User> users = this->userDao->findAll();
+        for (auto it = users.begin(); it != users.end(); it++) {
+            std::cout << *it << std::endl;
+        }
+    } catch(DBException& e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+void AdminView::updateUser() {
+    User user;
+    std::cin >> user;
+    try {
+        this->userDao->update(user);
+    } catch (UserNotFoundException& e) {
+        std::cerr << e.what() << std::endl;
+    } catch (DBException& e) {
+        std::cerr << e.what() << std::endl;
     }
 }

@@ -88,16 +88,8 @@ void LMS::run() {
 }
 
 void LMS::registerUser() {
-    std::string email, password, name, userType;
-    std::cout << "Enter email: ";
-    std::cin >> email;
-    char * pass = getpass("Enter password: ");
-    password = sha256(pass);
-    std::cout << "Enter name: ";
-    std::cin >> name;
-    std::cout << "Enter user type (admin, trainer, trainee): ";
-    std::cin >> userType;
-    User user(email, password, name, userType);
+    User user;
+    std::cin >> user;
     UserDao userDao(db);
     try {
         userDao.insert(user);
@@ -133,10 +125,10 @@ void LMS::loginUser() {
 
 void LMS::setView(std::string userType, User& user) {
     if (userType == "admin") {
-        this->view = new AdminView(&user);
+        this->view = new AdminView(&user, &db);
     } else if (userType == "trainer") {
-        this->view = new TrainerView(&user);
+        this->view = new TrainerView(&user, &db);
     } else if (userType == "trainee") {
-        this->view = new TraineeView(&user);
+        this->view = new TraineeView(&user, &db);
     }
 }

@@ -3,11 +3,14 @@
 
 #include <iostream>
 #include <string>
+
+#include "../db/user.hpp"
+#include "../db/database.hpp"
 #include "View.hpp"
 
 class TrainerView : public View {
 public:
-    TrainerView(User* user) : View(user) {}
+    TrainerView(User* user, Database* db) : View(user, db) {}
     ~TrainerView() {}
     void show();
     void run();

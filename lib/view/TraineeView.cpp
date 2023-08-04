@@ -30,7 +30,7 @@ void TraineeView::run() {
             std::cout << "Take Test" << std::endl;
             break;
         case 4:
-            std::cout << "View Profile" << std::endl;
+            viewProfile();
             break;
         case 5:
             std::cout << "Ask Queries" << std::endl;
@@ -49,4 +49,8 @@ void TraineeView::run() {
             break;
         }
     }
+}
+
+void TraineeView::viewProfile() {
+    std::cout << this->user << std::endl;
 }

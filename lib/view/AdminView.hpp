@@ -3,14 +3,25 @@
 
 #include <iostream>
 #include <string>
+
+#include "../db/user.hpp"
+#include "../db/database.hpp"
 #include "View.hpp"
 
 class AdminView : public View {
 public:
-    AdminView(User* user) : View(user) {}
+    AdminView(User* user, Database* db) : View(user, db) {
+        this->userDao = new UserDao(*db);
+    }
     ~AdminView() {}
     void show();
     void run();
+private:
+    UserDao* userDao;
+    void addUser();
+    void removeUser();
+    void updateUser();
+    void listUsers();
 };
 
 

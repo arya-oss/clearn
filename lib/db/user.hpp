@@ -4,6 +4,10 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <unistd.h>
+#include <iomanip>
+
+#include "../utils/hash.hpp"
 #include "../db/database.hpp"
 #include "../exception/exception.hpp"
 
@@ -24,6 +28,8 @@ public:
     void setUserType(const std::string& userType);
     bool operator==(const User& user) const;
     bool operator!=(const User& user) const;
+    friend std::ostream& operator<<(std::ostream& os, const User& user);
+    friend std::istream& operator>>(std::istream& is, User& user);
 private:
     int id;
     std::string email;
@@ -38,7 +44,7 @@ public:
     ~UserDao();
     bool insert(const User& user);
     bool update(const User& user);
-    bool remove(const User& user);
+    bool remove(const std::string email);
     User findByEmail(const std::string& email);
     bool verify(const std::string& email, const std::string& hashPassword);
     std::vector<User> findAll();
