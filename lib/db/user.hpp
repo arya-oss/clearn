@@ -16,6 +16,8 @@ public:
     std::string getPassword() const;
     std::string getName() const;
     std::string getUserType() const;
+    int getId() const;
+    void setId(int id);
     void setEmail(const std::string& email);
     void setPassword(const std::string& password);
     void setName(const std::string& name);
@@ -23,6 +25,7 @@ public:
     bool operator==(const User& user) const;
     bool operator!=(const User& user) const;
 private:
+    int id;
     std::string email;
     std::string password;
     std::string name;

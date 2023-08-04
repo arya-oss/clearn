@@ -35,6 +35,10 @@ void User::setUserType(const std::string& userType) {
     this->userType = userType;
 }
 
+void User::setId(int id) {
+    this->id = id;
+}
+
 std::string User::getEmail() const {
     return email;
 }
@@ -45,6 +49,10 @@ std::string User::getPassword() const {
 
 std::string User::getName() const {
     return name;
+}
+
+int User::getId() const {
+    return id;
 }
 
 std::string User::getUserType() const {
@@ -126,7 +134,7 @@ bool UserDao::remove(const User& user) {
  * @brief Find user by email
 */
 User UserDao::findByEmail(const std::string& email) {
-    std::string sql = "SELECT email, password, name, user_type FROM user WHERE email = ?";
+    std::string sql = "SELECT id, email, password, name, user_type FROM user WHERE email = ?";
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db.getHandle(), sql.c_str(), sql.size(), &stmt, NULL) != SQLITE_OK) {
         throw DBException("SQL error: " + std::string(sqlite3_errmsg(db.getHandle())));
@@ -135,30 +143,36 @@ User UserDao::findByEmail(const std::string& email) {
     if (sqlite3_step(stmt) != SQLITE_ROW) {
         throw UserNotFoundException(email);
     }
-    std::string _email = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-    std::string password = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-    std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-    std::string userType = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+    int _id = sqlite3_column_int(stmt, 0);
+    std::string _email = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+    std::string password = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+    std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+    std::string userType = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
     sqlite3_finalize(stmt);
-    return User(_email, password, name, userType);
+    User u(_email, password, name, userType);
+    u.setId(_id);
+    return u;
 }
 
 /**
  * @brief Find all users
 */
 std::vector<User> UserDao::findAll() {
-    std::string sql = "SELECT email, password, name, user_type FROM user";
+    std::string sql = "SELECT id, email, password, name, user_type FROM user";
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db.getHandle(), sql.c_str(), sql.size(), &stmt, NULL) != SQLITE_OK) {
         throw DBException("SQL error: " + std::string(sqlite3_errmsg(db.getHandle())));
     }
     std::vector<User> users;
     while (sqlite3_step(stmt) == SQLITE_ROW) {
-        std::string email = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-        std::string password = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-        std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-        std::string userType = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
-        users.push_back(User(email, password, name, userType));
+        int _id = sqlite3_column_int(stmt, 0);
+        std::string _email = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        std::string password = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        std::string userType = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+        User u(_email, password, name, userType);
+        u.setId(_id);
+        users.push_back(u);
     }
     sqlite3_finalize(stmt);
     return users;
