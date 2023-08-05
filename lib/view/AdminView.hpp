@@ -6,22 +6,27 @@
 
 #include "../db/user.hpp"
 #include "../db/database.hpp"
+#include "../db/course.hpp"
+#include "../exception/exception.hpp"
 #include "View.hpp"
 
 class AdminView : public View {
 public:
-    AdminView(User* user, Database* db) : View(user, db) {
-        this->userDao = new UserDao(*db);
-    }
-    ~AdminView() {}
+    AdminView(User* user, Database* db);
+    ~AdminView();
     void show();
     void run();
 private:
     UserDao* userDao;
+    CourseDao* courseDao;
     void addUser();
     void removeUser();
     void updateUser();
     void listUsers();
+    void addCourse();
+    void removeCourse();
+    void updateCourse();
+    void listCourses();
 };
 
 

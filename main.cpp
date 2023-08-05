@@ -48,9 +48,9 @@ LMS::~LMS() {
 }
 
 void LMS::initDatabaseSchema() {
-    std::stringstream ss;
     db.exec("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE, password TEXT NOT NULL, name TEXT NOT NULL, user_type TEXT NOT NULL);");
-    db.exec(ss.str());
+    db.exec("CREATE TABLE IF NOT EXISTS course (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, duration INTEGER NOT NULL, cost REAL NOT NULL, materials TEXT NOT NULL);");
+    db.exec("CREATE TABLE IF NOT EXISTS question (id INTEGER PRIMARY KEY AUTOINCREMENT, question TEXT NOT NULL, answer TEXT NOT NULL, course_id INTEGER NOT NULL, FOREIGN KEY(course_id) REFERENCES course(id));");
 }
 
 void LMS::displayChoices() {

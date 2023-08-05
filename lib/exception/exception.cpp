@@ -29,3 +29,23 @@ DBException::~DBException() {
 const char* DBException::what() const noexcept {
     return message.c_str();
 }
+
+CourseNotFoundException::CourseNotFoundException(int id) : id(id) {
+}
+
+CourseNotFoundException::~CourseNotFoundException() {
+}
+
+const char* CourseNotFoundException::what() const noexcept {
+    return "Course not found";
+}
+
+CourseAlreadyExistsException::CourseAlreadyExistsException(const std::string& name) : name(name) {
+}
+
+CourseAlreadyExistsException::~CourseAlreadyExistsException() {
+}
+
+const char* CourseAlreadyExistsException::what() const noexcept {
+    return "Course already exists";
+}

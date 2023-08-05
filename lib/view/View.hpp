@@ -11,7 +11,7 @@ public:
     virtual void show() = 0;
     virtual void run() = 0;
 protected:
-    Database* db;
+    Database* db = nullptr;
     User* user = nullptr;
 };
 

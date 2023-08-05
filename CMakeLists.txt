@@ -25,13 +25,10 @@ find_package(OpenSSL REQUIRED)
 
 include_directories(${SQLite3_INCLUDE_DIRS})
 
-add_library(db STATIC lib/db/database.cpp lib/db/user.cpp)
-add_library(exception STATIC lib/exception/exception.cpp)
-add_library(utils STATIC lib/utils/hash.cpp)
-add_library(view STATIC lib/view/View.hpp lib/view/AdminView.cpp lib/view/TraineeView.cpp lib/view/TrainerView.cpp)
+file(GLOB_RECURSE SOURCE_FILES "lib/**/*.cpp" "lib/**/*.h")
 add_executable(${OUTPUT_NAME} main.cpp)
 
-target_link_libraries(${OUTPUT_NAME} db utils exception view)
+target_link_libraries(${OUTPUT_NAME} ${SOURCE_FILES})
 target_link_libraries(${OUTPUT_NAME} ${PTHREAD_LIBRARY})
 target_link_libraries(${OUTPUT_NAME} ${SQLite3_LIBRARIES})
 target_link_libraries(${OUTPUT_NAME} ${OPENSSL_LIBRARIES})

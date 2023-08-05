@@ -1,5 +1,11 @@
 #include "TraineeView.hpp"
 
+TraineeView::TraineeView(User* user, Database* db) : View(user, db) {
+}
+
+TraineeView::~TraineeView() {
+}
+
 void TraineeView::show() {
     std::cout << "Choose an option:" << std::endl;
     std::cout << "1. Register Course" << std::endl;

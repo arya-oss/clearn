@@ -10,8 +10,8 @@
 
 class TrainerView : public View {
 public:
-    TrainerView(User* user, Database* db) : View(user, db) {}
-    ~TrainerView() {}
+    TrainerView(User* user, Database* db);
+    ~TrainerView();
     void show();
     void run();
 };

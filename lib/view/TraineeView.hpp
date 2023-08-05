@@ -11,8 +11,8 @@
 
 class TraineeView : public View {
 public:
-    TraineeView(User* user, Database* db) : View(user, db) {}
-    ~TraineeView() {}
+    TraineeView(User* user, Database* db);
+    ~TraineeView();
     void show();
     void run();
 private:

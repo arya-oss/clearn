@@ -32,4 +32,22 @@ class DBException : public std::exception {
         std::string message;
 };
 
+class CourseNotFoundException : public std::exception {
+    public:
+        CourseNotFoundException(int id);
+        ~CourseNotFoundException();
+        const char* what() const noexcept override;
+    private:
+        int id;
+};
+
+class CourseAlreadyExistsException : public std::exception {
+    public:
+        CourseAlreadyExistsException(const std::string& name);
+        ~CourseAlreadyExistsException();
+        const char* what() const noexcept override;
+    private:
+        std::string name;
+};
+
 #endif  // __LIB_EXCEPTION_EXCEPTION_HPP
