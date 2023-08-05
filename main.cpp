@@ -51,6 +51,10 @@ void LMS::initDatabaseSchema() {
     db.exec("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE, password TEXT NOT NULL, name TEXT NOT NULL, user_type TEXT NOT NULL);");
     db.exec("CREATE TABLE IF NOT EXISTS course (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, description TEXT NOT NULL, duration INTEGER NOT NULL, cost REAL NOT NULL, materials TEXT NOT NULL);");
     db.exec("CREATE TABLE IF NOT EXISTS question (id INTEGER PRIMARY KEY AUTOINCREMENT, question TEXT NOT NULL, answer TEXT NOT NULL, course_id INTEGER NOT NULL, FOREIGN KEY(course_id) REFERENCES course(id));");
+    db.exec("CREATE TABLE IF NOT EXISTS quiz (id INTEGER PRIMARY KEY AUTOINCREMENT, question TEXT NOT NULL, right_answer INTEGER NOT NULL, choice1 TEXT NOT NULL, choice2 TEXT NOT NULL, choice3 TEXT NOT NULL, choice4 TEXT NOT NULL, course_id INTEGER NOT NULL, FOREIGN KEY(course_id) REFERENCES course(id));");
+    db.exec("CREATE TABLE IF NOT EXISTS trainee_course (id INTEGER PRIMARY KEY AUTOINCREMENT, trainee_id INTEGER NOT NULL, course_id INTEGER NOT NULL, FOREIGN KEY(trainee_id) REFERENCES user(id), FOREIGN KEY(course_id) REFERENCES course(id));");
+    db.exec("CREATE TABLE IF NOT EXISTS trainer_course (id INTEGER PRIMARY KEY AUTOINCREMENT, trainer_id INTEGER NOT NULL, course_id INTEGER NOT NULL, FOREIGN KEY(trainer_id) REFERENCES user(id), FOREIGN KEY(course_id) REFERENCES course(id));");
+    db.exec("CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, course_id INTEGER NOT NULL, FOREIGN KEY(user_id) REFERENCES user(id), FOREIGN KEY(course_id) REFERENCES course(id));");
 }
 
 void LMS::displayChoices() {
