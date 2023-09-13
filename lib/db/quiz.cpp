@@ -1,10 +1,11 @@
 #include "quiz.hpp"
 #include "../exception/exception.hpp"
 
-Quiz::Quiz(std::string question, int rightAnswer, std::vector<std::string> choices) {
+Quiz::Quiz(std::string question, int rightAnswer, std::vector<std::string> choices, int courseId) {
     this->question = question;
     this->rightAnswer = rightAnswer;
     this->choices = choices;
+    this->courseId = courseId;
 }
 
 Quiz::~Quiz() {}
@@ -23,6 +24,10 @@ int Quiz::getRightAnswer() {
 
 std::vector<std::string> Quiz::getChoices() {
     return this->choices;
+}
+
+int Quiz::getCourseId() {
+    return this->courseId;
 }
 
 std::ostream& operator<<(std::ostream& os, const Quiz& quiz) {
@@ -116,7 +121,7 @@ Quiz QuizDao::getById(int quizId) {
         choices.push_back(std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, i + 4))));
     }
     sqlite3_finalize(stmt);
-    return Quiz(question, rightAnswer, choices);
+    return Quiz(question, rightAnswer, choices, courseId);
 }
 
 std::vector<Quiz> QuizDao::getAll(int course_id) {
@@ -130,11 +135,12 @@ std::vector<Quiz> QuizDao::getAll(int course_id) {
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         std::string question = std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)));
         int rightAnswer = sqlite3_column_int(stmt, 2);
+        int courseId = sqlite3_column_int(stmt, 3);
         std::vector<std::string> choices;
         for (int i = 0; i < 4; i++) {
             choices.push_back(std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, i + 4))));
         }
-        quizzes.push_back(Quiz(question, rightAnswer, choices));
+        quizzes.push_back(Quiz(question, rightAnswer, choices, courseId));
     }
     sqlite3_finalize(stmt);
     return quizzes;

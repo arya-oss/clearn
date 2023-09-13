@@ -15,7 +15,7 @@ private:
     std::vector<std::string> choices;
     int courseId;
 public:
-    Quiz(std::string question, int rightAnswer, std::vector<std::string> choices);
+    Quiz(std::string question, int rightAnswer, std::vector<std::string> choices, int courseId);
     ~Quiz();
 
     int getId();
